@@ -6,13 +6,13 @@ import javax.persistence.*;
 @Table(name = "Categories")
 public class Category {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     public long id;
     @Column (name = "name")
     public String name;
     @OneToOne(mappedBy = "category")
-    private Product product;
+
 
     public long getId() {
         return id;
@@ -37,11 +37,5 @@ public class Category {
     public Category() {
     }
 
-    public Product getProduct() {
-        return product;
-    }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 }

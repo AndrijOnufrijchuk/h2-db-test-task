@@ -10,13 +10,15 @@ import javax.persistence.*;
 @Table(name = "Products")
 public class Product {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     public long id;
     @Column (name = "name")
     public String name;
     @Column (name = "price")
     public int price;
+    @Column (name = "quantity")
+    public int quantity;
 
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable=false)
@@ -26,16 +28,18 @@ public class Product {
 
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="discount_id", referencedColumnName = "id",nullable=false)
+
     public Discount discount;
 
     public Product() {
     }
 
-    public Product(String name, int price, Category category, Discount discount) {
+    public Product(String name, int price,int quantity, Category category, Discount discount) {
         this.name = name;
         this.price = price;
         this.category = category;
         this.discount = discount;
+        this.quantity = quantity;
     }
 
     public long getId() {
@@ -60,6 +64,14 @@ public class Product {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public Category getCategory() {

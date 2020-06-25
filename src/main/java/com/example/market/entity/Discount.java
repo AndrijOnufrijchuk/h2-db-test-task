@@ -6,12 +6,10 @@ import javax.persistence.*;
 @Table(name = "Discounts")
 public class Discount {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     public long id;
     public double percentOfDiscount;
-    @OneToOne(mappedBy = "discount")
-    private Product product;
 
     public Discount() {
     }
@@ -36,11 +34,5 @@ public class Discount {
         this.percentOfDiscount = percentOfDiscount;
     }
 
-    public Product getProduct() {
-        return product;
-    }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 }
