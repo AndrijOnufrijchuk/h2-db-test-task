@@ -11,7 +11,7 @@ public class Category {
     public long id;
     @Column (name = "name")
     public String name;
-    @OneToOne(mappedBy = "category")
+
 
 
     public long getId() {

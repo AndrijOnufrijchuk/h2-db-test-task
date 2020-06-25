@@ -1,5 +1,8 @@
 package com.example.market.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,13 +12,19 @@ public class Discount {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     public long id;
-    public double percentOfDiscount;
+    @OneToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name="product_name", referencedColumnName = "name",nullable=false)
+    @JoinColumn(name="percentOfDiscount", referencedColumnName = "percentOfDiscount",nullable=false)
+    public Product product;
 
-    public Discount() {
+
+    public Discount(Product product) {
+        this.product = product;
+
     }
 
-    public Discount(double percentOfDiscount) {
-        this.percentOfDiscount = percentOfDiscount;
+    public Discount() {
     }
 
     public long getId() {
@@ -26,12 +35,12 @@ public class Discount {
         this.id = id;
     }
 
-    public double getPercentOfDiscount() {
-        return percentOfDiscount;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setPercentOfDiscount(double percentOfDiscount) {
-        this.percentOfDiscount = percentOfDiscount;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
 

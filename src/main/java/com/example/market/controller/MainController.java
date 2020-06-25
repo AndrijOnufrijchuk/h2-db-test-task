@@ -54,6 +54,70 @@ public class MainController {
         return "Invalid Id";
     }
 
+
+    @RequestMapping(value="/pay/{productIds}/{userId}", method=RequestMethod.GET)
+    @ResponseBody
+    public String pay(@PathVariable List<Integer> productIds,@PathVariable("userId") int userId) {
+   float overallCost = 0;
+  if(userRepo.findById((long)userId).isPresent()){
+
+  for(Integer element : productIds){
+
+      if( productRepo.findById(Long.valueOf((element))).get().getQuantity()==0){
+          productRepo.delete(productRepo.findById(Long.valueOf((element))).get());
+          productIds.remove(element);
+      }
+
+
+      if(productRepo.findById(Long.valueOf((element))).isPresent()){
+float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice() - (productRepo.findById(Long.valueOf((element))).get().getPrice() *
+         (productRepo.findById((long)element).get().getPercentOfDiscount()/100.0f)));
+          overallCost+= price;
+      }
+
+      else {
+          return HttpStatus.NOT_FOUND.getReasonPhrase();
+      }
+  }
+      if(userRepo.findById((long)userId).get().getBalance()>=overallCost) {
+          User user = userRepo.findById((long) userId).get();
+          user.setBalance(userRepo.findById((long) userId).get().getBalance() - overallCost);
+          userRepo.save(user);
+      }
+    else{
+          return HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase();
+      }
+      for(Integer element : productIds){
+
+
+
+
+
+          if (productRepo.findById(Long.valueOf((element))).get().getQuantity() == 1) {
+              productRepo.delete(productRepo.findById(Long.valueOf((element))).get());
+
+          } else {
+              productRepo.findById(Long.valueOf((element))).get().setQuantity(productRepo.findById(Long.valueOf((element))).get().getQuantity() - 1);
+              productRepo.save(productRepo.findById(Long.valueOf((element))).get());
+          }
+      }
+
+
+      }
+
+
+
+
+
+
+
+   else{
+       return HttpStatus.NOT_FOUND.getReasonPhrase();
+  }
+
+        return HttpStatus.OK.getReasonPhrase();
+    }
+
     @RequestMapping(value ="/list")
 
     @ResponseStatus(HttpStatus.OK)
@@ -62,12 +126,15 @@ public class MainController {
         productRepo.findAll().forEach(products::add);
       return products;
     }
+
     @RequestMapping(value ="/default")
-            private String onInitialized() {
+    @ResponseStatus(HttpStatus.OK)
+            private String createDefaultValues() {
         Category category = new Category("Meat");
-        Discount discount = new Discount(12.2);
+        Product product = new Product("Pork", 150, 30, category, 15 );
+        Discount discount = new Discount(product);
         User user = new User("Andrusha", 500);
-        Product product = new Product("Pork", 150, 30, category, discount);
+
 
         categoryRepo.save(category);
         discountRepo.save(discount);
@@ -77,7 +144,7 @@ public class MainController {
     }
 
     @PostMapping("/create_user")
-
+    @ResponseStatus(HttpStatus.OK)
     public User createUser(@RequestBody User user) {
         userRepo.save(user);
         return user;
@@ -85,14 +152,15 @@ public class MainController {
 
 
     @PostMapping("/create_product")
-
+    @ResponseStatus(HttpStatus.OK)
     public Product createProduct(@RequestBody Product product) {
         productRepo.save(product);
+        discountRepo.save(new Discount(product));
         return product;
     }
 
     @PostMapping("/create_category")
-
+    @ResponseStatus(HttpStatus.OK)
     public Category createCategory(@RequestBody Category category) {
         categoryRepo.save(category);
         return category;
@@ -100,11 +168,10 @@ public class MainController {
     }
 
     @PostMapping("/create_discount")
-
+    @ResponseStatus(HttpStatus.OK)
     public Discount createDiscount(@RequestBody Discount discount) {
         discountRepo.save(discount);
         return discount;
-
     }
 
 

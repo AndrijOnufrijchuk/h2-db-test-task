@@ -3,6 +3,8 @@ package com.example.market.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -20,26 +22,26 @@ public class Product {
     @Column (name = "quantity")
     public int quantity;
 
+    @Column (name="percentOfDiscount")
+    public int percentOfDiscount;
     @OneToOne(cascade = CascadeType.MERGE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable=false)
     public Category category;
 
 
 
-    @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name="discount_id", referencedColumnName = "id",nullable=false)
 
-    public Discount discount;
 
     public Product() {
     }
 
-    public Product(String name, int price,int quantity, Category category, Discount discount) {
+    public Product(String name, int price,int quantity, Category category, int percentOfDiscount) {
         this.name = name;
         this.price = price;
-        this.category = category;
-        this.discount = discount;
         this.quantity = quantity;
+        this.category = category;
+        this.percentOfDiscount = percentOfDiscount;
     }
 
     public long getId() {
@@ -82,12 +84,11 @@ public class Product {
         this.category = category;
     }
 
-    public Discount getDiscount() {
-        return discount;
+    public int getPercentOfDiscount() {
+        return percentOfDiscount;
     }
 
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
+    public void setPercentOfDiscount(int percentOfDiscount) {
+        this.percentOfDiscount = percentOfDiscount;
     }
-
 }

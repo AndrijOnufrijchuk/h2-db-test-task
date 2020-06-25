@@ -13,7 +13,7 @@ public class User {
     @Column (name = "name")
     public String name;
     @Column (name = "balance")
-    public int balance;
+    public float balance;
 
     public User() {
     }
@@ -31,11 +31,11 @@ public class User {
         this.name = name;
     }
 
-    public int getBalance() {
+    public float getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(float balance) {
         this.balance = balance;
     }
 
