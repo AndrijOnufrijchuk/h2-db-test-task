@@ -11,12 +11,12 @@ public class Discount {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    public long id;
+    private long id;
     @OneToOne(cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="product_name", referencedColumnName = "name",nullable=false)
     @JoinColumn(name="percentOfDiscount", referencedColumnName = "percentOfDiscount",nullable=false)
-    public Product product;
+    private Product product;
 
 
     public Discount(Product product) {

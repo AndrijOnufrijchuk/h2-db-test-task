@@ -1,18 +1,10 @@
 package com.example.market.controller;
 
 
-import com.example.market.entity.Category;
-import com.example.market.entity.Discount;
-import com.example.market.entity.Product;
-import com.example.market.entity.User;
-import com.example.market.repository.CategoryRepo;
-import com.example.market.repository.DiscountRepo;
-import com.example.market.repository.ProductRepo;
-import com.example.market.repository.UserRepo;
+import com.example.market.entity.*;
+import com.example.market.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -27,6 +19,8 @@ public class MainController {
     CategoryRepo categoryRepo;
     @Autowired
     DiscountRepo discountRepo;
+    @Autowired
+    BasketRepo basketRepo;
 
     @RequestMapping("/")
 
@@ -89,10 +83,6 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
       }
       for(Integer element : productIds){
 
-
-
-
-
           if (productRepo.findById(Long.valueOf((element))).get().getQuantity() == 1) {
               productRepo.delete(productRepo.findById(Long.valueOf((element))).get());
 
@@ -140,6 +130,7 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
         discountRepo.save(discount);
         userRepo.save(user);
         productRepo.save(product);
+
         return HttpStatus.OK.getReasonPhrase();
     }
 
@@ -151,9 +142,15 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
     }
 
 
+
+
+
     @PostMapping("/create_product")
     @ResponseStatus(HttpStatus.OK)
-    public Product createProduct(@RequestBody Product product) {
+    public Object createProduct(@RequestBody Product product) {
+        if(product.getPercentOfDiscount()<0){
+            return HttpStatus.NOT_ACCEPTABLE.getReasonPhrase();
+        }
         productRepo.save(product);
         discountRepo.save(new Discount(product));
         return product;
@@ -167,12 +164,12 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
 
     }
 
-    @PostMapping("/create_discount")
-    @ResponseStatus(HttpStatus.OK)
-    public Discount createDiscount(@RequestBody Discount discount) {
-        discountRepo.save(discount);
-        return discount;
+    @PostMapping("/create_basket")
+    public Basket addProductToBasket(@RequestBody Basket basket){
+        basketRepo.save(basket);
+return basket;
     }
+
 
 
 }

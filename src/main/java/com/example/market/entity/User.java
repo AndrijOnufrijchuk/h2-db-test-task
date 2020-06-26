@@ -9,11 +9,11 @@ public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    public long id;
+    private long id;
     @Column (name = "name")
-    public String name;
+    private String name;
     @Column (name = "balance")
-    public float balance;
+    private float balance;
 
     public User() {
     }
@@ -22,6 +22,7 @@ public class User {
         this.name = name;
         this.balance = balance;
     }
+
 
     public String getName() {
         return name;

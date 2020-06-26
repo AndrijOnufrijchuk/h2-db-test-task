@@ -14,13 +14,13 @@ public class Product {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    public long id;
+    private long id;
     @Column (name = "name")
-    public String name;
+    private String name;
     @Column (name = "price")
-    public int price;
+    private int price;
     @Column (name = "quantity")
-    public int quantity;
+    private int quantity;
 
     @Column (name="percentOfDiscount")
     public int percentOfDiscount;
@@ -28,8 +28,6 @@ public class Product {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable=false)
     public Category category;
-
-
 
 
 
@@ -43,6 +41,7 @@ public class Product {
         this.category = category;
         this.percentOfDiscount = percentOfDiscount;
     }
+
 
     public long getId() {
         return id;
