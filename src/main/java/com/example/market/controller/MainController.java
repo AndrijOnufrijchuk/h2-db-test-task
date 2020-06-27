@@ -22,13 +22,6 @@ public class MainController {
     @Autowired
     BasketRepo basketRepo;
 
-    @RequestMapping("/")
-
-    public String homePage() {
-
-        return "hi Andrusha";
-    }
-
 
     @GetMapping("/add_money/{userId}/{userName}/{value}")
 
@@ -49,79 +42,102 @@ public class MainController {
     }
 
 
-    @RequestMapping(value="/pay/{productIds}/{userId}", method=RequestMethod.GET)
+    @RequestMapping(value = "/pay/{productIds}/{userId}", method = RequestMethod.GET)
     @ResponseBody
-    public String pay(@PathVariable List<Integer> productIds,@PathVariable("userId") int userId) {
-   float overallCost = 0;
-  if(userRepo.findById((long)userId).isPresent()){
-
-  for(Integer element : productIds){
-
-      if( productRepo.findById(Long.valueOf((element))).get().getQuantity()==0){
-          productRepo.delete(productRepo.findById(Long.valueOf((element))).get());
-          productIds.remove(element);
-      }
-
-
-      if(productRepo.findById(Long.valueOf((element))).isPresent()){
-float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice() - (productRepo.findById(Long.valueOf((element))).get().getPrice() *
-         (productRepo.findById((long)element).get().getPercentOfDiscount()/100.0f)));
-          overallCost+= price;
-      }
-
-      else {
-          return HttpStatus.NOT_FOUND.getReasonPhrase();
-      }
-  }
-      if(userRepo.findById((long)userId).get().getBalance()>=overallCost) {
-          User user = userRepo.findById((long) userId).get();
-          user.setBalance(userRepo.findById((long) userId).get().getBalance() - overallCost);
-          userRepo.save(user);
-      }
-    else{
-          return HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase();
-      }
-      for(Integer element : productIds){
-
-          if (productRepo.findById(Long.valueOf((element))).get().getQuantity() == 1) {
-              productRepo.delete(productRepo.findById(Long.valueOf((element))).get());
-
-          } else {
-              productRepo.findById(Long.valueOf((element))).get().setQuantity(productRepo.findById(Long.valueOf((element))).get().getQuantity() - 1);
-              productRepo.save(productRepo.findById(Long.valueOf((element))).get());
-          }
-      }
+    public String pay(@PathVariable List<Integer> productIds, @PathVariable("userId") int userId) {
+        float overallCost = 0;
+        //check if user exists
+        if (userRepo.findById((long) userId).isPresent()) {
+            System.out.println("user exist");
+            if (!basketRepo.findAllByUserId((long) userId).isEmpty()) {
+                //find all elements from basket with specified user
+                System.out.println("basket for that user exist");
+                List<Basket> baskets = basketRepo.findAllByUserId(userId);
+//calculate overall cost
+                for (Basket basket : baskets) {
+                    System.out.println("Basket iterating");
 
 
-      }
+                    float price = (basket.getProduct().getPrice() - (basket.getProduct().getPrice() * basket.getProduct().getPercentOfDiscount() / 100.0f)) * basket.getUserQuantity();
+                    System.out.println("price " + price);
+                    overallCost += price;
+                }
+
+//check if user has enough balance to pay
+                if (userRepo.findById((long) userId).get().getBalance() >= overallCost) {
+
+                    userRepo.findById((long) userId).get().setBalance(userRepo.findById((long) userId).get().getBalance() - overallCost);
+                } else {
+                    return HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase();
+                }
+
+
+                for (Integer productId : productIds) {
+                    Long pId = new Long(productId);
+                    if (productRepo.findById(pId).isPresent()) {
+                        for (Basket basket : baskets) {
+                            //check if there is enough product quantity
+                            if (basket.getUserQuantity() > productRepo.findById(pId).get().getQuantity()) {
+                                return HttpStatus.BAD_REQUEST.getReasonPhrase();
+                            }
+
+
+                            if (basket.getProduct().getId() == productRepo.findById(pId).get().getId()) {
+
+                                if (basket.getUserQuantity() <= productRepo.findById(pId).get().getQuantity()) {
+
+//subtraction quntity that was buyed or delete if quantity = 0
+
+                                        Product product = productRepo.findById(Long.valueOf((pId))).get();
+
+                                        product.setQuantity(productRepo.findById(Long.valueOf((pId))).get().getQuantity() - basket.getUserQuantity());
+                                        basketRepo.delete(basket);
+
+                                        if (productRepo.findById(Long.valueOf((pId))).get().getQuantity() == 0) {
+                                            productRepo.delete(product);
+                                        } else {
+                                            productRepo.save(product);
+                                        }
 
 
 
 
+                                }
+                            }
+                        }
+
+                    }
 
 
+                }
 
-   else{
-       return HttpStatus.NOT_FOUND.getReasonPhrase();
-  }
+
+            } else {
+                return HttpStatus.NOT_FOUND.getReasonPhrase();
+            }
+
+        } else {
+            return HttpStatus.NOT_FOUND.getReasonPhrase();
+        }
+
 
         return HttpStatus.OK.getReasonPhrase();
     }
 
-    @RequestMapping(value ="/list")
+    @RequestMapping(value = "/list")
 
     @ResponseStatus(HttpStatus.OK)
-    private  LinkedList<Product> getAllProducts() {
+    private LinkedList<Product> getAllProducts() {
         LinkedList<Product> products = new LinkedList<>();
         productRepo.findAll().forEach(products::add);
-      return products;
+        return products;
     }
 
-    @RequestMapping(value ="/default")
+    @RequestMapping(value = "/default")
     @ResponseStatus(HttpStatus.OK)
-            private String createDefaultValues() {
+    private String createDefaultValues() {
         Category category = new Category("Meat");
-        Product product = new Product("Pork", 150, 30, category, 15 );
+        Product product = new Product("Pork", 150, 30, category, 15);
         Discount discount = new Discount(product);
         User user = new User("Andrusha", 500);
 
@@ -142,13 +158,10 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
     }
 
 
-
-
-
     @PostMapping("/create_product")
     @ResponseStatus(HttpStatus.OK)
     public Object createProduct(@RequestBody Product product) {
-        if(product.getPercentOfDiscount()<0){
+        if (product.getPercentOfDiscount() < 0) {
             return HttpStatus.NOT_ACCEPTABLE.getReasonPhrase();
         }
         productRepo.save(product);
@@ -165,11 +178,10 @@ float  price =  ( productRepo.findById(Long.valueOf((element))).get().getPrice()
     }
 
     @PostMapping("/create_basket")
-    public Basket addProductToBasket(@RequestBody Basket basket){
+    public Basket addProductToBasket(@RequestBody Basket basket) {
         basketRepo.save(basket);
-return basket;
+        return basket;
     }
-
 
 
 }

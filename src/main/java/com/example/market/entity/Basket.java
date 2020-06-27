@@ -19,7 +19,8 @@ private int  userQuantity;
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=false)
     private User user;
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-    @JoinColumn(name="product_id", referencedColumnName = "id",nullable=false)
+    @JoinColumn(name="product_id", referencedColumnName = "id",nullable=false,unique = true)
+
     private Product product;
 
 
