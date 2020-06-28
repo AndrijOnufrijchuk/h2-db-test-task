@@ -9,13 +9,13 @@ import javax.persistence.*;
 @Table(name = "Discounts")
 public class Discount {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
     @OneToOne(cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name="product_name", referencedColumnName = "name",nullable=false)
-    @JoinColumn(name="percentOfDiscount", referencedColumnName = "percentOfDiscount",nullable=false)
+    @JoinColumn(name = "product_name", referencedColumnName = "name", nullable = false)
+    @JoinColumn(name = "percentOfDiscount", referencedColumnName = "percentOfDiscount", nullable = false)
     private Product product;
 
 

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BasketRepo extends CrudRepository <Basket,Long> {
+public interface BasketRepo extends CrudRepository<Basket, Long> {
 
-    List<Basket>  findAllByUserId(long userId);
+    List<Basket> findAllByUserId(long userId);
 
 }

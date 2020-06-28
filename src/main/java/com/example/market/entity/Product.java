@@ -1,8 +1,5 @@
 package com.example.market.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.istack.NotNull;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -12,29 +9,28 @@ import javax.persistence.*;
 @Table(name = "Products")
 public class Product {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
-    @Column (name = "price")
+    @Column(name = "price")
     private int price;
-    @Column (name = "quantity")
+    @Column(name = "quantity")
     private int quantity;
 
-    @Column (name="percentOfDiscount")
+    @Column(name = "percentOfDiscount")
     public int percentOfDiscount;
     @OneToOne(cascade = CascadeType.MERGE)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable=false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     public Category category;
-
 
 
     public Product() {
     }
 
-    public Product(String name, int price,int quantity, Category category, int percentOfDiscount) {
+    public Product(String name, int price, int quantity, Category category, int percentOfDiscount) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;

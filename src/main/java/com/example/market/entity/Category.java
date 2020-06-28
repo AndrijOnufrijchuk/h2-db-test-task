@@ -6,12 +6,11 @@ import javax.persistence.*;
 @Table(name = "Categories")
 public class Category {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
-
 
 
     public long getId() {

@@ -1,25 +1,23 @@
 package com.example.market.entity;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
+
 @Entity
 @Table(name = "UserBucket")
 public class Basket {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
     @Column(name = "userQuantity")
-private int  userQuantity;
+    private int userQuantity;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-    @JoinColumn(name="product_id", referencedColumnName = "id",nullable=false,unique = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false, unique = true)
 
     private Product product;
 
@@ -32,7 +30,6 @@ private int  userQuantity;
 
     public Basket() {
     }
-
 
 
     public long getId() {
